@@ -12,8 +12,32 @@ const fetchMyIP = function(callback) {
       return;
     }
   
-    callback(null,body);
+    callback(null,body.ip);
    
   });
 };
-module.exports = {fetchMyIP};
+
+const fetchCoordsByIP = function (ip, callback) {
+  const url = `http://ipwho.is/${ip}`;
+  
+  needle.get(url, (error, response) =>{
+    if (error) {
+      callback(error, null);
+      return;
+    }
+    const body = response.body;
+     if (!body.success) {
+      callback(Error('Failed to fetch coordinates'), null);
+      return;
+    }
+
+    callback(null, {
+      latitude: body.latitude,
+      longitude: body.longitude
+    });
+  })
+
+}
+
+
+module.exports = {fetchMyIP,fetchCoordsByIP};
