@@ -20,24 +20,43 @@ const fetchMyIP = function(callback) {
 const fetchCoordsByIP = function (ip, callback) {
   const url = `http://ipwho.is/${ip}`;
   
-  needle.get(url, (error, response) =>{
+  needle.get(url, (error, response, body) =>{
     if (error) {
       callback(error, null);
       return;
     }
     const body = response.body;
-     if (!body.success) {
+     if (!body.success) {      
       callback(Error('Failed to fetch coordinates'), null);
       return;
     }
-
+    const latitude = body.latitude
+    const longitude = body.longitude
     callback(null, {
-      latitude: body.latitude,
-      longitude: body.longitude
+      latitude, longitude
     });
   })
 
 }
 
+const fetchISSFlyOverTimes = function(coords, callback) {
+  const url = `https://iss-flyover.herokuapp.com/json/?lat=${coords.latitude}&lon=${coords.longitude}`;
 
-module.exports = {fetchMyIP,fetchCoordsByIP};
+  needle.get(url, (error, response, body) => {
+    if (error) {
+      callback(error, null);
+      return;
+    }
+
+    if (response.statusCode !== 200) {
+      callback(Error(`Status Code ${response.statusCode} when fetching ISS pass times: ${body}`), null);
+      return;
+    }
+
+    const passes = body.response;
+    callback(null, passes);
+  });
+};
+
+
+module.exports = {fetchMyIP,fetchCoordsByIP,fetchISSFlyOverTimes};
