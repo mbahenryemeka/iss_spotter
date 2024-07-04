@@ -25,13 +25,16 @@ const fetchCoordsByIP = function (ip, callback) {
       callback(error, null);
       return;
     }
-    const body = response.body;
-     if (!body.success) {      
-      callback(Error('Failed to fetch coordinates'), null);
+
+    const parsedBody = JSON.parse(body);
+    if (!parsedBody.success) {      
+      const message = `Success status was ${parsedBody.success}. Server message says: ${parsedBody.message} when fetching for IP ${parsedBody.ip}`;
+      callback(Error(message), null);
       return;
     }
-    const latitude = body.latitude
-    const longitude = body.longitude
+
+    const latitude = parsedBody.latitude
+    const longitude = parsedBody.longitude
     callback(null, {
       latitude, longitude
     });
