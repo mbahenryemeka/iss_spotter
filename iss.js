@@ -1,22 +1,23 @@
 const needle = require('needle');
 
 const fetchMyIP = function(callback) {
-  needle.get('https://api.ipify.org?format=json', (error, response, body) => {
+  needle.get('https://api.ipify.org?format=json', (error, response) => {
     if (error) {
       callback(error, null);
       return;
     }
     // if non-200 status, assume server error
     if (response.statusCode !== 200) {
-      const msg = `Status Code ${response.statusCode} when fetching IP. Response: ${body}`;
+      const msg = `Status Code ${response.statusCode} when fetching IP. Response: ${response.body}`;
       callback(Error(msg), null);
       return;
     }
-  
-    callback(null,body.ip);
+    callback(null,response.body.ip);
    
   });
 };
+
+
 
 const fetchCoordsByIP = function (ip, callback) {
   const url = `http://ipwho.is/${ip}`;
