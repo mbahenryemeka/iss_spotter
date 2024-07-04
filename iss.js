@@ -56,7 +56,7 @@ const fetchISSFlyOverTimes = function(coords, callback) {
       return;
     }
 
-    const passes = body.response;
+    const passes = JSON.parse(body).response;
     callback(null, passes);
   });
 };
